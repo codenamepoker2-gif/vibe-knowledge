@@ -55,6 +55,16 @@ S=${VK_WORKSPACE:-~/vibe-knowledge}/examples/vk; L=$S/lessons/<期号>
 
 依赖：ai-teardown skill（cine 引擎、make_lesson 配音）、`CINE_PY`（numpy scipy pillow playwright 的 Python；本机是 `/usr/local/bin/python3.12`，跑之前 `PYTHONPATH=` 清空，否则会加载坏掉的 PIL）、MiMo 密钥 `~/.config/ai-teardown/mimo.env`、Renoise MCP（只有增强档需要；缺的话按 references/04-renoise.md「接入 Renoise」一节引导，注册链接给 https://renoise.ai/mcp ，不加任何追踪参数；增强档也可以完全不用 Renoise，用自己的生成器出图出视频，见 04-renoise.md「自带生成器」）、ffmpeg、swiftc（OCR）。
 
+## Thai mode (`--lang th`) · โหมดภาษาไทย · 泰语模式
+
+用户用泰语说话、给泰语选题、或要求泰语片时走这一套（中文仍是默认）。全部细节见 **references/15-thai.md**，发布见 references/16-publish-th.md。
+- 新建：`new_film.py <期号> --template C --title "<ชื่อไทย>" --lang th --series vk-th`；推荐风格 `recommend.py "<หัวข้อไทย>"`（自动泰文输出）；时长 `duration.py --scores … --lang th [--backend say|edge-f|edge-m]`（按实测语速：say 8.2、edge 男声 11.6、女声 13.1 显示字符/秒）。
+- 字数一律按泰文「显示字符」（字素簇，不算上下元音、声调、空格）：画面关键词 ≤14、字幕每条 ≤30，母版骨架里每拍的上限已经折算好。
+- 配音：`scripts/tts_th.py`（`say` 默认、`edge`、`gemini`、`mimo`），输出与 tts_mimo.py 相同，后面照常 speed → check_timings → voice_post → fit_bgm。**macOS 系统语音（say）的许可只允许个人非商业使用、不得公开发布**：say 只用来出草稿和对时间，发布前用 edge / gemini / mimo / 用户本人录音重配，并在确认 1 时告诉用户。
+- 画面：cine 引擎自带 Noto Sans Thai，含泰文的元素自动字距归零、按词换行；泰文封面和图里的字一律在浏览器里渲染（PIL 排不了泰文上下标），AI 生图不让模型写泰文。
+- 增强档可以完全不用 Renoise：assets.json 的 `engine` 写 manual / codex-imagen / grok / comfyui / renoise（04-renoise.md「自带生成器」）。
+- 质检：`qa.py <成片> --lang th`（Apple Vision th-TH OCR）；自检 `python3 tools/selftest_th.py`。
+
 ## 流水线（三个确认点）
 
 | 段 | 做什么 | 产出 |
@@ -108,6 +118,8 @@ voice.log 里回读 <95% 的拍删掉 `build/audio/<拍>.*` 重配；专名用 l
 | references/12-style-families.md | 风格家族与扩充路线：为什么 7 套显得单薄、风格 × 手法两条轴、87 种 UI 风格的取舍表、从 promo-video 借了什么、增强档风格踩坑（MJ 画成器物、年代词带偏服饰、ESRGAN 分块错位、画布等解码、Vision 投影） |
 | references/10-earshot.md | earshot 代码音效（252 个，MIT，0 积分）：安装、film.js 写法、知识片角色→音效对照表、对齐时机 |
 | references/11-absorbed.md | 吸星大法：14 个开源同类项目的旁白对位规则、9 种解说语法、结构与发布技巧、质检流程、12 个新风格候选、Vox 纸拼贴做法、许可证边界 |
+| references/15-thai.md | 泰语模式（ภาษาไทย）：显示字符口径、关键词 / 字幕上限、tts_th.py 四种声音与许可、实测语速、字体与换行、泰式风格、未完成事项 |
+| references/16-publish-th.md | 泰国平台发布（TikTok / Facebook Reels / YouTube Shorts）：9:16 转换（已测）、标题与话题、AI 内容标注、声音许可 |
 | references/08-tiers.md | 两档制作：基础档 0 积分怎么做到精品、增强档怎么挑镜头、预算、两档通用写法 |
 | templates/narration/A–F.json | 6 个母版的旁白骨架（每拍字数上限、[[cue]]） |
 | templates/film.skeleton.js | film.js 骨架（配乐、音效、冷开场、尾卡写法） |

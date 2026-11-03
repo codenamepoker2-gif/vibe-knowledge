@@ -9,6 +9,10 @@
 Backends (narration.json "voice": {"engine": "say", "voice": "Kanya", "lang": "th"}; command line wins):
   say     macOS `say -v Kanya` — default. Free, offline, nothing leaves the machine. No word timestamps.
           --rate = words per minute passed to `say -r` (default: the voice's own rate).
+          LICENCE: the macOS Software License Agreement (macOS 26, section on "System Voices") allows system voices
+          only for "personal, non-commercial use" and forbids publishing them "in a profit, non-profit, public sharing or
+          commercial context". Use `say` for drafts, timing and previews; publish with another voice (edge / gemini /
+          mimo / your own recording).
   edge    edge-tts (`uvx --from edge-tts`, or the edge_tts module if importable). Free neural voices
           th-TH-NiwatNeural (default, male) / th-TH-PremwadeeNeural (female). It uses Microsoft Edge's online
           read-aloud service without an official API agreement: the text is sent to Microsoft, it can change or
@@ -304,6 +308,11 @@ def main():
     space_w = float(arg("--space-weight", 1.5))
     if backend == "say" and not shutil.which("say"):
         sys.exit("say backend needs macOS (`say -v Kanya`); use --backend edge elsewhere")
+    if backend == "say":
+        print("note: macOS system voices are licensed for personal, non-commercial use only (macOS SLA, \"System Voices\"); "
+              "use this take for drafts/timing and re-voice with --backend edge|gemini|mimo or your own recording before publishing.\n"
+              "หมายเหตุ: เสียงระบบของ macOS ใช้ได้เฉพาะงานส่วนตัวที่ไม่ใช่เชิงพาณิชย์ และห้ามเผยแพร่สาธารณะ ใช้ทำร่างและจับเวลาได้ "
+              "แต่ก่อนเผยแพร่ให้พากย์ใหม่ด้วย edge / gemini / mimo หรือเสียงของคุณเอง", file=sys.stderr)
     lexicon = data.get("lexicon", {})
     (out / "audio").mkdir(parents=True, exist_ok=True)
     t_start = time.time()

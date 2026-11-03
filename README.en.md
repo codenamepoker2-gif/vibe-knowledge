@@ -7,7 +7,7 @@ A Claude Code skill that takes a topic through research → script → voice →
 
 [![MIT](https://img.shields.io/badge/license-MIT-2f7d4f)](LICENSE) [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-d97757)](skills/vibe-knowledge/SKILL.md) [![Renoise MCP](https://img.shields.io/badge/video-Renoise%20MCP-ff7a1a)](https://renoise.ai/mcp)
 
-[中文](README.md) · [Samples](#samples) · [Styles](#44-styles--8-families) · [Audio](#default-voice--bgm) · [Renoise](#renoise-the-generation-platform-for-the-enhanced-tier) · [Install](#install)
+[中文](README.md) · [ภาษาไทย](README.th.md) · [Samples](#samples) · [Styles](#44-styles--8-families) · [Audio](#default-voice--bgm) · [Renoise](#renoise-the-generation-platform-for-the-enhanced-tier) · [Install](#install)
 
 <img src="docs/style-flash.gif" width="720" alt="style flash reel">
 

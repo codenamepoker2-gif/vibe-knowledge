@@ -54,7 +54,7 @@
 - narration.json：`"voice": {"engine": "say", "voice": "Kanya", "lang": "th"}`（engine 可选 `say` / `edge` / `gemini` / `mimo`），`lexicon` 写法照旧（例：`{"AI": "เอไอ"}`）。`[[cue]]` 写法照旧，放在泰文短语开头。
 - 命令：`python3 scripts/tts_th.py $L/narration.json $L/build --gap 0.2 --lead 0.3 [--backend edge] [--qa]`。输出与 tts_mimo.py 完全一样，之后照常 `speed.py` → `check_timings.py` → `voice_post.py` → `fit_bgm.py`；timings.json 多一个 `voice.lang: "th"`，cine 据此出泰文字幕。
 - 四种声音：
-  - `say`（默认）：macOS 自带 Kanya，免费、离线，文字不出本机；没有逐词时间。
+  - `say`（默认）：macOS 自带 Kanya，免费、离线，文字不出本机；没有逐词时间。**许可限制**：macOS 软件许可协议（macOS 26「System Voices」条款）只允许系统语音用于「个人、非商业」用途，并禁止在「营利、非营利、公开分享或商业」场合发布。say 只用来出草稿、对时间、试听；要发布的片子用其他声音或本人录音重配（tts_th.py 用 say 时会打印这条提醒）。
   - `edge`：edge-tts（`uvx --from edge-tts`），免费神经音色 th-TH-NiwatNeural（男，默认）/ th-TH-PremwadeeNeural（女），带逐词时间。它非官方地调用微软 Edge 的在线朗读服务：文字会发到微软，随时可能变动或停用，没有任何服务保证。
   - `gemini`：用户自己的 `GEMINI_API_KEY`，模型 `gemini-3.8-flash-tts`（`GEMINI_TTS_MODEL` 可改），音色默认 Kore，`voice.style` 作为 speech_metadata 的 style。免费层不收费但按项目限流，且 Google 定价页注明免费层数据会用于改进其产品。本仓库作者机器上没有密钥，未实测。
   - `mimo`：沿用 tts_mimo.py 的密钥和接口，泰语效果未验证。

@@ -7,7 +7,7 @@ Claude Code skill：选题 → 查证 → 写稿 → 配音 → 代码成片 →
 
 [![MIT](https://img.shields.io/badge/license-MIT-2f7d4f)](LICENSE) [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-d97757)](skills/vibe-knowledge/SKILL.md) [![Renoise MCP](https://img.shields.io/badge/video-Renoise%20MCP-ff7a1a)](https://renoise.ai/mcp)
 
-[English](README.en.md) · [看样片](#看样片) · [风格库](#风格库44-套--8-个家族) · [听一听](#听一听默认音色与-bgm) · [Renoise](#renoise增强档的生成平台) · [安装](#安装)
+[English](README.en.md) · [ภาษาไทย](README.th.md) · [看样片](#看样片) · [风格库](#风格库44-套--8-个家族) · [听一听](#听一听默认音色与-bgm) · [Renoise](#renoise增强档的生成平台) · [安装](#安装)
 
 <img src="docs/style-flash.gif" width="720" alt="风格快闪片">
 
