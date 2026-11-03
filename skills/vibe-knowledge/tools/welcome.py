@@ -3,15 +3,18 @@
 用法：python3 welcome.py            # 没介绍过才生成并打开（~/.vibe-knowledge/welcomed 不存在时）
       python3 welcome.py --force    # 不管有没有介绍过，都重新生成并打开（风格库更新后用）
       python3 welcome.py --no-open  # 只生成不打开
-输出：~/Desktop/vibe-knowledge/风格图鉴/index.html（风格图、快闪片、样片拷到同目录，相对路径引用，整个文件夹可以直接发给别人）。"""
-import html, json, re, shutil, subprocess, sys
+输出：$VK_WORKSPACE/风格图鉴/index.html（默认 ~/vibe-knowledge）（风格图、快闪片、样片拷到同目录，相对路径引用，整个文件夹可以直接发给别人）。"""
+import html, json, os, re, shutil, subprocess, sys
 from pathlib import Path
 
 SK = Path(__file__).resolve().parents[1]
 CAT = json.loads((SK / "styles/catalog.json").read_text(encoding="utf-8"))
 MARK = Path.home() / ".vibe-knowledge/welcomed"
-OUT = Path.home() / "Desktop/vibe-knowledge/风格图鉴"
-VID = Path.home() / "Desktop/Vibe知识大赏_视频"
+WS = Path(os.environ.get("VK_WORKSPACE") or Path.home() / "vibe-knowledge").expanduser()   # 不放桌面：iCloud 同步会挪走文件
+OUT = WS / "风格图鉴"
+VID = Path(os.environ.get("VK_DELIVER") or WS / "deliver").expanduser()   # 成片 / 样片目录（旧版在 ~/Desktop/Vibe知识大赏_视频）
+if not VID.exists() and (Path.home() / "Desktop/Vibe知识大赏_视频").exists():
+    VID = Path.home() / "Desktop/Vibe知识大赏_视频"
 REEL = VID / "风格快闪_42s_八家族.mp4"          # 风格快闪片（promo-video 出片后放这里；旧版 风格快闪_30s.mp4 只有 7 套）
 POSTER_AT = {"风格快闪_42s_八家族.mp4": 20.4, "风格快闪_30s.mp4": 4.5, "styles_风格样片集.mp4": 14.5, "styles2_风格样片集_剪辑与纪实.mp4": 15.0, "styles3_风格样片集_补空白家族.mp4": 7.4, "styles4_风格样片集_增强档东方与印刷.mp4": 7.4, "styles5_风格样片集_第五批.mp4": 7.4, "styles6_风格样片集_第六批.mp4": 7.4, "styles7_风格样片集_第七批增强档.mp4": 7.4, "styles8_风格样片集_田园像素.mp4": 7.0, "styles9_风格样片集_第九批.mp4": 7.4, "styles10_风格样片集_手绘过程.mp4": 7.6, "01_商鞅立木.mp4": 58.0}
 SAMPLES = {"styles": VID / "styles_风格样片集.mp4", "styles2": VID / "styles2_风格样片集_剪辑与纪实.mp4", "styles3": VID / "styles3_风格样片集_补空白家族.mp4", "styles4": VID / "styles4_风格样片集_增强档东方与印刷.mp4", "styles5": VID / "styles5_风格样片集_第五批.mp4", "styles6": VID / "styles6_风格样片集_第六批.mp4", "styles7": VID / "styles7_风格样片集_第七批增强档.mp4", "styles8": VID / "styles8_风格样片集_田园像素.mp4", "styles9": VID / "styles9_风格样片集_第九批.mp4", "styles10": VID / "styles10_风格样片集_手绘过程.mp4", "ep01": VID / "01_商鞅立木.mp4"}

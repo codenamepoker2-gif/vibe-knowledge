@@ -8,7 +8,7 @@
      说话时（已压低）BGM 比人声低 VOICE_GAP dB；film.js 的 gain_curve 只保留「形状」（哪里起伏），绝对音量由这里定。
      没说话的地方照 finish.py 原本的压低逻辑自动抬起（约 +7 dB），片尾尾卡再按 gain_curve 抬。
   3. 写 build/bgm.json（有没有 BGM、校准前后的人声比），qa.py 会读它，没有就报警。
-手动打补丁：python3 bgm_force.py --patch <系列目录>（例：~/Desktop/vibe-knowledge/examples/vk）"""
+手动打补丁：python3 bgm_force.py --patch <系列目录>（例：~/vibe-knowledge/examples/vk，即 $VK_WORKSPACE/examples/vk）"""
 import json
 import subprocess
 import sys

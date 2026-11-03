@@ -22,4 +22,4 @@
 
 ## 交付文件夹
 
-`~/Desktop/Vibe知识大赏_视频/第NN期_片名/`：成片（分享版，开头帧已是封面）、封面两张、标题和简介文本 `post.txt`、facts.md（出处备查）。
+`$VK_WORKSPACE/deliver/第NN期_片名/`（默认 `~/vibe-knowledge/deliver/`，new_film.py 写进 `cine/deliver.env`；不放桌面，iCloud 同步会挪走文件）：成片（分享版，开头帧已是封面）、封面两张、标题和简介文本 `post.txt`、facts.md（出处备查）。

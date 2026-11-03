@@ -2,7 +2,7 @@
 """新建一期知识短片（建在 ai-teardown 的 cine 引擎上）。
 
 用法：
-  python3 ~/.claude/skills/vibe-knowledge/tools/new_film.py <期号> --template A --title "本福特定律" [--ws ~/Desktop/vibe-knowledge] [--series vk]
+  python3 ~/.claude/skills/vibe-knowledge/tools/new_film.py <期号> --template A --title "本福特定律" [--ws ~/vibe-knowledge] [--series vk]
          [--voice-ref <你的 10–30 秒录音.wav>] [--ratio 16:9]
 
 做的事：
@@ -20,7 +20,14 @@ import sys
 from pathlib import Path
 
 SKILL = Path(__file__).resolve().parents[1]
-AT = Path.home() / ".claude/skills/ai-teardown"
+# ai-teardown：先找同一仓库 / 同一 skills 目录里的兄弟目录，再看 VK_AI_TEARDOWN，最后才是 ~/.claude/skills/ai-teardown
+# （ai-teardown is resolved as a sibling first, so a repo checkout never mixes with an older installed copy）
+AT = next((p for p in (Path(os.environ["VK_AI_TEARDOWN"]).expanduser() if os.environ.get("VK_AI_TEARDOWN") else None,
+                       SKILL.parent / "ai-teardown", Path.home() / ".claude/skills/ai-teardown") if p and (p / "engine").exists()),
+          Path.home() / ".claude/skills/ai-teardown")
+# 工作区：VK_WORKSPACE，默认 ~/vibe-knowledge。不再默认放桌面：macOS 的桌面常开着 iCloud 同步，渲染途中文件会被「优化存储」挪走。
+# Workspace: $VK_WORKSPACE, default ~/vibe-knowledge (not ~/Desktop: iCloud "Optimize Storage" can evict files mid-render).
+WORKSPACE = Path(os.environ.get("VK_WORKSPACE") or Path.home() / "vibe-knowledge").expanduser()
 DEFAULT_REF = Path(os.environ.get("VK_VOICE_REF") or Path(__file__).resolve().parents[1] / "assets/voice/default-voice-ref.wav")   # 默认：AI 设计的「科技博主沉稳男声」；想用自己的克隆音色就传 --voice-ref 或设 VK_VOICE_REF
 
 SEEK = 'pg.evaluate("(t) => window.__film.seek(t)", t)'
@@ -64,7 +71,7 @@ def main():
     ap.add_argument("id")
     ap.add_argument("--template", required=True, choices=list("ABCDEF"))
     ap.add_argument("--title", required=True)
-    ap.add_argument("--ws", default=str(Path.home() / "Desktop/vibe-knowledge"))
+    ap.add_argument("--ws", default=str(WORKSPACE))
     ap.add_argument("--series", default="vk")
     ap.add_argument("--voice-ref", default=str(DEFAULT_REF))
     a = ap.parse_args()
@@ -74,6 +81,8 @@ def main():
     if not (sd / "cine/engine/core.js").exists():
         subprocess.run([sys.executable, str(AT / "engine/scripts/new_series.py"), str(ws), a.series, "--style", "cine", "--title", "Vibe知识大赏"], check=True)
         shutil.copytree(AT / "templates/series-cine/tools", sd / "tools", dirs_exist_ok=True)
+        # 成片交付目录跟着工作区走（new_series.py 默认写的是桌面）
+        (sd / "cine/deliver.env").write_text(f'# deliver.sh 的去向（zsh 语法）\nD="{ws}/deliver"\nWEB=publish/course\nSTRIP=""\n', encoding="utf-8")
     shutil.copy(SKILL / "kit/know.js", sd / "cine/engine/know.js")
     patch_tools(sd)
     patch_finish(sd)

@@ -31,7 +31,7 @@ film.js 里：`music.push({ src: P("audio/bgm.wav"), from: 0, at: 0, dur: END + 
 
 ## 首次使用与风格推荐（先做这一步）
 
-- **首次使用**（`~/.vibe-knowledge/welcomed` 不存在）：先跑 `python3 ~/.claude/skills/vibe-knowledge/tools/welcome.py`，生成并打开本地「风格图鉴」（`~/Desktop/vibe-knowledge/风格图鉴/index.html`：风格快闪片、样片集、按家族分组的风格卡、三种开口方式、两档、流程），然后在对话里用 5–6 句话介绍：母版 × 风格 × 档位、8 个家族各举一两套、三种开口方式，最后问「想先做哪个选题？」。风格库更新后用 `--force` 重新生成。
+- **首次使用**（`~/.vibe-knowledge/welcomed` 不存在）：先跑 `python3 ~/.claude/skills/vibe-knowledge/tools/welcome.py`，生成并打开本地「风格图鉴」（`$VK_WORKSPACE/风格图鉴/index.html`，默认 `~/vibe-knowledge/风格图鉴/`：风格快闪片、样片集、按家族分组的风格卡、三种开口方式、两档、流程），然后在对话里用 5–6 句话介绍：母版 × 风格 × 档位、8 个家族各举一两套、三种开口方式，最后问「想先做哪个选题？」。风格库更新后用 `--force` 重新生成。
 - **用户给了选题**：先跑 `python3 ~/.claude/skills/vibe-knowledge/tools/recommend.py "<选题>"`，拿到 3 套推荐后用 AskUserQuestion 问（推荐第一的排第一、标「（推荐）」、description 写理由和搭配母版；preview 写一句画面描述和风格图路径），同时用 SendUserFile 把 3 张风格图发给用户对照。用户点名了风格就跳过推荐。推荐到增强档风格时，在选项 description 里写明「需生图，约 8 积分/段」。
 - 风格目录的唯一来源是 `styles/catalog.json`（推荐、图鉴、快闪片都读它）；加新风格时同步 catalog.json、STYLE.md、still.jpg。
 
@@ -48,8 +48,9 @@ film.js 里：`music.push({ src: P("audio/bgm.wav"), from: 0, at: 0, dur: END + 
 
 ```bash
 python3 ~/.claude/skills/vibe-knowledge/tools/new_film.py <期号> --template A --title "本福特定律"
-#   默认工作区 ~/Desktop/vibe-knowledge、系列 vk；第一次会自动建 cine 系列、装 know.js、给录制工具打补丁、放用户克隆音色
-S=~/Desktop/vibe-knowledge/examples/vk; L=$S/lessons/<期号>
+#   默认工作区 $VK_WORKSPACE（不设就是 ~/vibe-knowledge）、系列 vk；第一次会自动建 cine 系列、装 know.js、给录制工具打补丁、放用户克隆音色
+#   不要放在 ~/Desktop：macOS 桌面常开 iCloud 同步，「优化储存空间」会在渲染途中把文件挪走（ไม่ควรวางไว้บน Desktop: iCloud อาจย้ายไฟล์ออกระหว่างเรนเดอร์）
+S=${VK_WORKSPACE:-~/vibe-knowledge}/examples/vk; L=$S/lessons/<期号>
 ```
 
 依赖：ai-teardown skill（cine 引擎、make_lesson 配音）、`CINE_PY`（numpy scipy pillow playwright 的 Python；本机是 `/usr/local/bin/python3.12`，跑之前 `PYTHONPATH=` 清空，否则会加载坏掉的 PIL）、MiMo 密钥 `~/.config/ai-teardown/mimo.env`、Renoise MCP（只有增强档需要；缺的话按 references/04-renoise.md「接入 Renoise」一节引导，注册链接原样给 https://renoise.ai/mcp?utm_medium=xcom&utm_source=official ）、ffmpeg、swiftc（OCR）。
@@ -74,7 +75,7 @@ S=~/Desktop/vibe-knowledge/examples/vk; L=$S/lessons/<期号>
 ## 常用命令
 
 ```bash
-cd ~/Desktop/vibe-knowledge; S=examples/vk; L=$S/lessons/<期号>
+cd ${VK_WORKSPACE:-~/vibe-knowledge}; S=examples/vk; L=$S/lessons/<期号>
 python3 scripts/tts_mimo.py $L/narration.json $L/build --gap 0.2 --lead 0.3 --qa --jobs 2 > $L/voice.log 2>&1   # 配音 + 逐字对齐 + 回读（拍间只留 0.2 秒，别用 make_lesson 默认的 0.8）
 python3 scripts/speed.py $L 1.1                                        # 需要时整体提速，目标 5.5–6 字/秒
 (cd $S && python3 tools/check_timings.py <期号>)                       # 对齐有没有断
