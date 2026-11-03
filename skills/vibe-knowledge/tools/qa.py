@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""成片质检：python3 qa.py <成片.mp4> [--every 3] [--out qa/]
+"""成片质检：python3 qa.py <成片.mp4> [--every 3] [--out qa/] [--lang th]
+（--lang th：OCR 用泰文 th-TH + 英文；Thai OCR via Apple Vision th-TH）
 1) 每 N 秒抽一帧拼接触表 qa/sheet.jpg（逐张看：字溢出、压字幕、空屏、配图里有乱码字）
 2) Vision OCR 回读屏幕上的每一行字 → qa/ocr.txt（对照 facts.md 核数字、引文、出处）
 3) 响度：整体 LUFS / 真峰值（目标 ≈ −14.5 LUFS、≤ −1 dBTP）
@@ -19,7 +20,9 @@ fs = sorted(fr.glob("f_*.png"))
 ocr = SK / "ocr"
 if not ocr.exists() or ocr.stat().st_mtime < (SK / "ocr.swift").stat().st_mtime:
     subprocess.run(["swiftc", "-O", str(SK / "ocr.swift"), "-o", str(ocr)], check=True)
-txt = subprocess.run([str(ocr), *map(str, fs)], capture_output=True, text=True).stdout
+LANG = arg("--lang", "zh")
+langs = {"th": "th-TH,en-US", "zh": "zh-Hans,en-US", "en": "en-US"}.get(LANG, LANG)
+txt = subprocess.run([str(ocr), f"--langs={langs}", *map(str, fs)], capture_output=True, text=True).stdout
 lines, seen = [], []
 for blk in txt.split("@@")[1:]:
     ls = blk.strip().split("\n"); i = int(re.search(r"(\d+)", ls[0]).group(1)); t = (i - 1) * every
@@ -30,7 +33,16 @@ for blk in txt.split("@@")[1:]:
 (out / "ocr.txt").write_text("\n".join(lines), encoding="utf-8")
 w = 400; ims = [Image.open(f) for f in fs]; h = int(w * ims[0].height / ims[0].width); cols = 6
 sheet = Image.new("RGB", (cols * w, ((len(ims) + cols - 1) // cols) * h), "black"); d = ImageDraw.Draw(sheet)
-font = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial.ttf", 20)
+def _font(size):   # 接触表时间码字体：先找能显示泰文的，再退到 Arial / 默认字体（不再写死 Arial 路径）。注意：PIL 没有 libraqm 时排不了泰文上下标，泰文字一律在浏览器里渲
+    at = SK.parents[1] / "ai-teardown/engine/assets/fonts"
+    for f in (at / "NotoSansThai-VF.ttf", Path.home() / "Library/Fonts/Sarabun-Regular.ttf", Path("/Library/Fonts/Arial Unicode.ttf"),
+              Path("/System/Library/Fonts/Supplemental/Arial Unicode.ttf"), Path("/System/Library/Fonts/Supplemental/Arial.ttf"),
+              Path("/usr/share/fonts/truetype/noto/NotoSansThai-Regular.ttf"), Path("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")):
+        if f.exists():
+            try: return ImageFont.truetype(str(f), size)
+            except OSError: continue
+    return ImageFont.load_default()
+font = _font(20)
 for i, im in enumerate(ims):
     x, y = (i % cols) * w, (i // cols) * h; sheet.paste(im.resize((w, h)), (x, y)); t = i * every
     d.rectangle([x, y, x + 70, y + 24], fill="black"); d.text((x + 4, y + 2), f"{int(t // 60)}:{int(t % 60):02d}", fill="yellow", font=font)
