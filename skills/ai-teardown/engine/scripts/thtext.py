@@ -117,7 +117,7 @@ def words(s):
         return out
     except Exception:  # noqa: BLE001
         pass
-    return [(m.start(), m.end()) for m in re.finditer(r"\S+", s)]
+    return [(m.start(), m.end()) for m in re.finditer(r"\S+(?:\s+\u0E46)*", s)]   # keep ไม้ยมก ๆ with its word
 
 
 def segmenter_name():
