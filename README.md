@@ -5,7 +5,7 @@
 **一个知识点 → 一条有旁白、每句有出处的精品知识短片。**<br>
 Claude Code skill：选题 → 查证 → 写稿 → 配音 → 代码成片 → 1080p60 → 质检 → 发布包，全程在对话里完成。
 
-[![MIT](https://img.shields.io/badge/license-MIT-2f7d4f)](LICENSE) [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-d97757)](skills/vibe-knowledge/SKILL.md) [![Renoise MCP](https://img.shields.io/badge/video-Renoise%20MCP-ff7a1a)](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)
+[![MIT](https://img.shields.io/badge/license-MIT-2f7d4f)](LICENSE) [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-d97757)](skills/vibe-knowledge/SKILL.md) [![Renoise MCP](https://img.shields.io/badge/video-Renoise%20MCP-ff7a1a)](https://renoise.ai/mcp)
 
 [English](README.en.md) · [看样片](#看样片) · [风格库](#风格库44-套--8-个家族) · [听一听](#听一听默认音色与-bgm) · [Renoise](#renoise增强档的生成平台) · [安装](#安装)
 
@@ -19,7 +19,7 @@ Claude Code skill：选题 → 查证 → 写稿 → 配音 → 代码成片 →
 
 ## 看样片
 
-点封面播放（视频放在 [Release v1.0.0](https://github.com/andyhuo520/vibe-knowledge/releases/tag/v1.0.0)）。所有画面都由 Claude Opus 编排、代码逐帧渲染；标「增强」的镜头用 [Renoise](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official) 生成配图和动态镜头，片中都标注「AI 示意」。
+点封面播放（视频放在 [Release v1.0.0](https://github.com/andyhuo520/vibe-knowledge/releases/tag/v1.0.0)）。所有画面都由 Claude Opus 编排、代码逐帧渲染；标「增强」的镜头用 [Renoise](https://renoise.ai/mcp) 生成配图和动态镜头，片中都标注「AI 示意」。
 
 <table>
 <tr><td width="50%" valign="top"><a href="https://github.com/andyhuo520/vibe-knowledge/releases/download/v1.0.0/ep04b-no-fridge-gufeng.mp4"><img src="docs/posters/ep04b-no-fridge-gufeng.jpg" width="100%"></a><br><b>如果你活在古代没有冰箱（古风版）</b><br><sub>2:05 · 两难选择片 · 古风 · 增强标准档（Wan 3.0 动态镜头）</sub></td><td width="50%" valign="top"><a href="https://github.com/andyhuo520/vibe-knowledge/releases/download/v1.0.0/ep01-shangyang.mp4"><img src="docs/posters/ep01-shangyang.jpg" width="100%"></a><br><b>商鞅立木：搬一根木头赏五十金，你搬不搬？</b><br><sub>2:32 · 两难选择片 · 古风 · 增强档</sub></td></tr>
@@ -89,7 +89,7 @@ Claude Code skill：选题 → 查证 → 写稿 → 配音 → 代码成片 →
 
 ## Renoise：增强档的生成平台
 
-**[Renoise](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)** 是一个 AI 视频、图片、音频生成平台，通过 MCP 直接接进 Claude Code、Codex 等 Agent。一个账号就能用 Midjourney、GPT Image、Nano Banana、Seedance 2.5、Wan 3.0、Kling、Grok Video、Lyria、ElevenLabs 音效等模型，在对话里直接生成。
+**[Renoise](https://renoise.ai/mcp)** 是一个 AI 视频、图片、音频生成平台，通过 MCP 直接接进 Claude Code、Codex 等 Agent。一个账号就能用 Midjourney、GPT Image、Nano Banana、Seedance 2.5、Wan 3.0、Kling、Grok Video、Lyria、ElevenLabs 音效等模型，在对话里直接生成。
 
 在 vibe-knowledge 里，Renoise 只负责**增强档**里代码做不好的那几个镜头：写实的时代场景配图、最需要被记住的 1–3 个动态镜头、个别音效。其余画面照样用代码画。**基础档完全不需要 Renoise，0 积分就能出片。**
 
@@ -97,7 +97,7 @@ Claude Code skill：选题 → 查证 → 写稿 → 配音 → 代码成片 →
 - **花多少心里有数**：第 01 期《商鞅立木》增强版用了 246 积分（10 张 Midjourney 配图 + 2 个 Wan 动态镜头 + 配乐 + 5 个音效）；增强档一般在轻 ≈25–40 / 标准 ≈250–300 / 旗舰 ≈600–700 积分。
 - **片中标注**：Renoise 生成的画面都会标「AI 示意」。
 
-**还没有账号？先到 [renoise.ai](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official) 注册**。登录都在浏览器里完成，不用复制任何 API key。然后按你用的 Agent 接入：
+**还没有账号？先到 [renoise.ai](https://renoise.ai/mcp) 注册**。登录都在浏览器里完成，不用复制任何 API key。然后按你用的 Agent 接入：
 
 | 用的是 | 怎么接 |
 |---|---|
@@ -120,7 +120,7 @@ cp -R vibe-knowledge/skills/vibe-knowledge vibe-knowledge/skills/ai-teardown ~/.
 - 渲染用的 Python：`python3 -m venv ~/.venvs/cine && ~/.venvs/cine/bin/pip install numpy scipy pillow playwright && ~/.venvs/cine/bin/python -m playwright install chromium-headless-shell`，再 `export CINE_PY=~/.venvs/cine/bin/python`。
 - `ffmpeg`；OCR 质检用 macOS 自带的 Vision（需要 `swiftc`）。
 - 配音：小米 MiMo，密钥放 `MIMO_API_KEY` 环境变量或 `~/.config/ai-teardown/mimo.env`（**不要写进项目文件**）。默认音色是仓库自带的 AI 声音；想用自己的声音：`new_film.py --voice-ref 你的录音.wav`（只用你本人或已获授权的声音）。
-- 增强档（可选）：[Renoise MCP](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)，注册和接入见上面的 [Renoise](#renoise增强档的生成平台) 一节。
+- 增强档（可选）：[Renoise MCP](https://renoise.ai/mcp)，注册和接入见上面的 [Renoise](#renoise增强档的生成平台) 一节。
 
 然后在 Claude Code 里说：
 

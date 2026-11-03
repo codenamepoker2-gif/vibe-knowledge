@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Renoise 视频 → 帧序列（给 know.js 的 vclip 用）。
+"""生成的视频（Renoise 或任何生成器）→ 帧序列（给 know.js 的 vclip 用）。Any generated clip → frames for vclip.
 用法：python3 clip2frames.py <in.mp4> <lessons/NN/assets/clips/v01> [--fps 30] [--w 1920] [--from 0] [--dur 0] [--nocrop]
 - 自动裁黑边：Wan 等模型的输出常带上下信箱黑边（2026-10-27 实测 Wan 3.0 720p 顶部 66 像素纯黑）。
   抽 3 帧量每一行的平均亮度，连续 ≤2.5 的行算黑边，取 3 帧里最小的，再多裁 2 像素。--nocrop 关掉。

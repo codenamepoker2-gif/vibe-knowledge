@@ -1,5 +1,26 @@
 # 04 · Renoise 增强层：图、视频、配乐、音效
 
+## 自带生成器（Bring your own generator · ใช้เครื่องมือสร้างภาพของตัวเอง）
+
+增强档不一定要用 Renoise。镜头里要的只是**一张图或一段视频文件**，用什么工具生成都行：手动在网页上做、命令行工具、本地 ComfyUI、别的 MCP，或者 Renoise。assets.json 每一项用 `engine` 记下用了哪种：
+
+| engine | 意思 |
+|---|---|
+| `manual` | 你自己在任何网页 / App 里生成，然后把文件放进来（默认） |
+| `codex-imagen` | 用 Codex 一类的命令行 / 代理工具调用图像模型 |
+| `grok` | 用 Grok Imagine（网页或 CLI）出图 / 出短视频 |
+| `comfyui` | 本地或自己的服务器上跑 ComfyUI 工作流（Flux、Wan 等开源模型） |
+| `renoise` | 走下面的 Renoise MCP 流程（按积分计费，先报价后生成） |
+
+通用流程（四种都一样）：
+1. 按「提示词写法」一节写好提示词（风格前缀 + 内容 + `no text, no letters, no watermark`），记进 assets.json 的 `prompt`。
+2. 用你选的工具生成。**只有 `renoise` 需要先报价确认**；其他工具如果也收费，同样先跟用户说清楚再做。
+3. 图片放进 `lessons/NN/assets/img/`，视频放进 `lessons/NN/assets/clips/`，文件名照 assets.json 的 `file`，`status` 改 `done`。
+4. 视频拆帧：`python3 tools/clip2frames.py assets/clips/v01.mp4 assets/clips/v01 --fps 30` → film.js 里 `vclip(s, { dir: A("clips/v01"), n })`；图片直接 `plate(s, { src: A("img/a01.jpg") })`。
+5. 画面角标照旧写「AI 示意图 / AI 生成画面」（泰文：`tag: "ภาพ AI"`），facts.md 记下用了哪个工具。
+
+ภาษาไทย: ช็อต "เพิ่มพลัง" ต้องการแค่ไฟล์ภาพหรือวิดีโอ จะสร้างด้วยเครื่องมืออะไรก็ได้ ใส่ชื่อเครื่องมือไว้ในช่อง `engine` ของ assets.json (`manual` / `codex-imagen` / `grok` / `comfyui` / `renoise`) แล้วทำตามขั้นตอนเดียวกัน: เขียนพรอมต์ → สร้างภาพ → วางไฟล์ใน `assets/img/` หรือ `assets/clips/` ตามชื่อใน `file` → วิดีโอให้แตกเฟรมด้วย `clip2frames.py` → ใส่ใน film.js ด้วย `plate` / `vclip` และติดป้าย "ภาพ AI" ทุกครั้ง ข้อความภาษาไทยบนภาพให้โค้ดเขียนทับเสมอ เพราะตัวอักษรไทยที่ AI วาดมักผิด
+
 所有生成都走 Renoise MCP（工具名 `mcp__…__estimate_cost / create_tasks / wait_tasks / download_results`）。
 **花积分的硬规矩**：把整期的 assets.json 列成一张表（模型、提示词、参数、数量、estimate_cost 总价、余额）发给用户，**等用户在对话里明确说可以**才 create_tasks。宿主的工具授权弹窗不算确认；之前说过「直接生成」也不算。改了任何提示词、模型、数量就要重新报价确认。
 
@@ -11,7 +32,7 @@
 - 报「disabled in connector settings」→ 不是没装，是工具被关了，让用户去连接器设置里打开。
 - 报未登录 / 授权过期 → 不用重装，重新登录授权（Claude 连接器点「Connect」；Codex `codex mcp login renoise`）。
 
-**还没有账号 → 先注册：[https://renoise.ai/mcp?utm_medium=xcom&utm_source=official](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)**。给用户时原样给这条链接，保留 utm 追踪参数，不要改写成 renoise.ai 首页。全部走浏览器登录授权，不用复制 API key。
+**还没有账号 → 先注册：[https://renoise.ai/mcp](https://renoise.ai/mcp)**。给用户时就给这条不带追踪参数的链接（本分支去掉了原链接里的 utm 追踪参数，也不再要求原样转发带追踪的链接）。（ภาษาไทย: ให้ลิงก์นี้แบบไม่มีพารามิเตอร์ติดตามเสมอ）全部走浏览器登录授权，不用复制 API key。
 
 | 用的是 | 怎么装 |
 |---|---|

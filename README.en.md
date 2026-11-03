@@ -5,7 +5,7 @@
 **One idea → one narrated, fully sourced, cinematic explainer short.**<br>
 A Claude Code skill that takes a topic through research → script → voice → code-rendered video (1080p60) → QA → publishing kit, all inside the chat.
 
-[![MIT](https://img.shields.io/badge/license-MIT-2f7d4f)](LICENSE) [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-d97757)](skills/vibe-knowledge/SKILL.md) [![Renoise MCP](https://img.shields.io/badge/video-Renoise%20MCP-ff7a1a)](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)
+[![MIT](https://img.shields.io/badge/license-MIT-2f7d4f)](LICENSE) [![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-d97757)](skills/vibe-knowledge/SKILL.md) [![Renoise MCP](https://img.shields.io/badge/video-Renoise%20MCP-ff7a1a)](https://renoise.ai/mcp)
 
 [中文](README.md) · [Samples](#samples) · [Styles](#44-styles--8-families) · [Audio](#default-voice--bgm) · [Renoise](#renoise-the-generation-platform-for-the-enhanced-tier) · [Install](#install)
 
@@ -19,7 +19,7 @@ A Claude Code skill that takes a topic through research → script → voice →
 
 ## Samples
 
-Click a poster to play (videos live in [Release v1.0.0](https://github.com/andyhuo520/vibe-knowledge/releases/tag/v1.0.0)). Narration and captions are in Chinese; labels under each poster give the template · style · tier. Every frame is orchestrated by Claude Opus and rendered frame-by-frame in code; "enhanced" shots use [Renoise](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official) for AI images and motion clips, always labelled as AI illustrations on screen.
+Click a poster to play (videos live in [Release v1.0.0](https://github.com/andyhuo520/vibe-knowledge/releases/tag/v1.0.0)). Narration and captions are in Chinese; labels under each poster give the template · style · tier. Every frame is orchestrated by Claude Opus and rendered frame-by-frame in code; "enhanced" shots use [Renoise](https://renoise.ai/mcp) for AI images and motion clips, always labelled as AI illustrations on screen.
 
 <table>
 <tr><td width="50%" valign="top"><a href="https://github.com/andyhuo520/vibe-knowledge/releases/download/v1.0.0/ep04b-no-fridge-gufeng.mp4"><img src="docs/posters/ep04b-no-fridge-gufeng.jpg" width="100%"></a><br><b>如果你活在古代没有冰箱（古风版）</b><br><sub>2:05 · 两难选择片 · 古风 · 增强标准档（Wan 3.0 动态镜头）</sub></td><td width="50%" valign="top"><a href="https://github.com/andyhuo520/vibe-knowledge/releases/download/v1.0.0/ep01-shangyang.mp4"><img src="docs/posters/ep01-shangyang.jpg" width="100%"></a><br><b>商鞅立木：搬一根木头赏五十金，你搬不搬？</b><br><sub>2:32 · 两难选择片 · 古风 · 增强档</sub></td></tr>
@@ -70,7 +70,7 @@ Two tiers share one `film.js`: **base** (0 credits: hand-written SVG layers, par
 
 ## Renoise: the generation platform for the enhanced tier
 
-**[Renoise](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)** is an AI video, image and audio generation platform that plugs straight into Claude Code, Codex and other agents over MCP. One account gives you Midjourney, GPT Image, Nano Banana, Seedance 2.5, Wan 3.0, Kling, Grok Video, Lyria, ElevenLabs SFX and more, right inside the chat.
+**[Renoise](https://renoise.ai/mcp)** is an AI video, image and audio generation platform that plugs straight into Claude Code, Codex and other agents over MCP. One account gives you Midjourney, GPT Image, Nano Banana, Seedance 2.5, Wan 3.0, Kling, Grok Video, Lyria, ElevenLabs SFX and more, right inside the chat.
 
 vibe-knowledge only uses it for the **enhanced tier**, for the few shots code can't do well: realistic period scenes, the one to three motion shots viewers should remember, and the occasional sound effect. Everything else is still drawn in code. **The base tier needs no Renoise at all and costs 0 credits.**
 
@@ -78,7 +78,7 @@ vibe-knowledge only uses it for the **enhanced tier**, for the few shots code ca
 - **Predictable cost**: episode 01 (enhanced) used 246 credits (10 Midjourney images, 2 Wan motion shots, music, 5 SFX). Enhanced levels are roughly light ≈25–40, standard ≈250–300, flagship ≈600–700 credits.
 - Renoise-generated imagery is labelled as an AI illustration on screen.
 
-**No account yet? Sign up at [renoise.ai](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official).** Sign-in happens in the browser; no API key to copy. Then connect your agent:
+**No account yet? Sign up at [renoise.ai](https://renoise.ai/mcp).** Sign-in happens in the browser; no API key to copy. Then connect your agent:
 
 | Agent | How to connect |
 |---|---|

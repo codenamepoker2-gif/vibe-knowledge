@@ -47,7 +47,7 @@ three.js、Rough.js、lottie-web、AntV X6、Geist、Noto Sans SC、霞鹜文楷
 
 ## 五、外部服务
 
-小米 MiMo（配音与语音识别）、[Renoise](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)（增强档的配图、动态镜头、音效）、Anthropic Claude Code / Claude Opus（编排与写代码）。这些服务由使用者自行注册，本仓库不包含任何密钥。
+小米 MiMo（配音与语音识别）、[Renoise](https://renoise.ai/mcp)（增强档的配图、动态镜头、音效）、Anthropic Claude Code / Claude Opus（编排与写代码）。这些服务由使用者自行注册，本仓库不包含任何密钥。
 
 ---
 

@@ -53,7 +53,7 @@ python3 ~/.claude/skills/vibe-knowledge/tools/new_film.py <期号> --template A 
 S=${VK_WORKSPACE:-~/vibe-knowledge}/examples/vk; L=$S/lessons/<期号>
 ```
 
-依赖：ai-teardown skill（cine 引擎、make_lesson 配音）、`CINE_PY`（numpy scipy pillow playwright 的 Python；本机是 `/usr/local/bin/python3.12`，跑之前 `PYTHONPATH=` 清空，否则会加载坏掉的 PIL）、MiMo 密钥 `~/.config/ai-teardown/mimo.env`、Renoise MCP（只有增强档需要；缺的话按 references/04-renoise.md「接入 Renoise」一节引导，注册链接原样给 https://renoise.ai/mcp?utm_medium=xcom&utm_source=official ）、ffmpeg、swiftc（OCR）。
+依赖：ai-teardown skill（cine 引擎、make_lesson 配音）、`CINE_PY`（numpy scipy pillow playwright 的 Python；本机是 `/usr/local/bin/python3.12`，跑之前 `PYTHONPATH=` 清空，否则会加载坏掉的 PIL）、MiMo 密钥 `~/.config/ai-teardown/mimo.env`、Renoise MCP（只有增强档需要；缺的话按 references/04-renoise.md「接入 Renoise」一节引导，注册链接给 https://renoise.ai/mcp ，不加任何追踪参数；增强档也可以完全不用 Renoise，用自己的生成器出图出视频，见 04-renoise.md「自带生成器」）、ffmpeg、swiftc（OCR）。
 
 ## 流水线（三个确认点）
 

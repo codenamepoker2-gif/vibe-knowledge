@@ -20,5 +20,5 @@
 
 - [earshot](https://github.com/Leonxlnx/earshot) 代码音效库（MIT，可选，见 skills/vibe-knowledge/references/10-earshot.md）
 - 小米 MiMo TTS（配音，需自备密钥）
-- [Renoise MCP](https://renoise.ai/mcp?utm_medium=xcom&utm_source=official)（增强档的配图、动态镜头、音效，可选）
+- [Renoise MCP](https://renoise.ai/mcp)（增强档的配图、动态镜头、音效，可选）
 - ffmpeg、Playwright（Chromium headless shell）
