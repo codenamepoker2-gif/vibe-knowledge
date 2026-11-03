@@ -3,7 +3,9 @@
 
 用法：
   python3 ~/.claude/skills/vibe-knowledge/tools/new_film.py <期号> --template A --title "本福特定律" [--ws ~/vibe-knowledge] [--series vk]
-         [--voice-ref <你的 10–30 秒录音.wav>] [--ratio 16:9]
+         [--voice-ref <你的 10–30 秒录音.wav>] [--lang zh|th]
+  --lang th：泰语版（ภาษาไทย）——旁白骨架用 templates/narration/th/<母版>.json（配音 tts_th.py，默认 macOS say Kanya），
+             film.js 骨架 film.skeleton.th.js，事实清单 facts.th.md；建议系列名另起，如 --series vk-th。
 
 做的事：
 1. 工作区 / 系列不存在就调用 ai-teardown 的 new_series.py --style cine 建好（引擎、字体、渲染工具）。
@@ -74,6 +76,7 @@ def main():
     ap.add_argument("--ws", default=str(WORKSPACE))
     ap.add_argument("--series", default="vk")
     ap.add_argument("--voice-ref", default=str(DEFAULT_REF))
+    ap.add_argument("--lang", default="zh", choices=["zh", "th"])
     a = ap.parse_args()
 
     ws = Path(a.ws).expanduser().resolve()
@@ -111,13 +114,17 @@ def main():
     for d in ("assets/img", "assets/clips", "assets/audio", "build", "stills"):
         (L / d).mkdir(parents=True)
     T = SKILL / "templates"
-    narr = (T / f"narration/{a.template}.json").read_text(encoding="utf-8")
+    th = a.lang == "th"
+    narr = (T / (f"narration/th/{a.template}.json" if th else f"narration/{a.template}.json")).read_text(encoding="utf-8")
     (L / "narration.json").write_text(narr, encoding="utf-8")
-    film = (T / "film.skeleton.js").read_text(encoding="utf-8").replace("__TITLE__", a.title).replace("__ID__", a.id).replace("__TPL__", a.template)
+    film = (T / ("film.skeleton.th.js" if th else "film.skeleton.js")).read_text(encoding="utf-8").replace("__TITLE__", a.title).replace("__ID__", a.id).replace("__TPL__", a.template)
     (L / "film.js").write_text(film, encoding="utf-8")
-    shutil.copy(T / "facts.md", L / "facts.md")
+    shutil.copy(T / ("facts.th.md" if th else "facts.md"), L / "facts.md")
     shutil.copy(T / "assets.json", L / "assets.json")
-    print(f"✓ 新一期：{L}\n  母版 {a.template} · {a.title}\n  下一步：写 facts.md → narration.json → assets.json（报价确认）→ 配音 → film.js")
+    if th:
+        print(f"✓ ตอนใหม่: {L}\n  แบบ {a.template} · {a.title} · ภาษาไทย\n  ต่อไป: เขียน facts.md → narration.json → assets.json → พากย์ด้วย scripts/tts_th.py → film.js")
+    else:
+        print(f"✓ 新一期：{L}\n  母版 {a.template} · {a.title}\n  下一步：写 facts.md → narration.json → assets.json（报价确认）→ 配音 → film.js")
 
 
 if __name__ == "__main__":
