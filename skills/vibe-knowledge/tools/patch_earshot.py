@@ -59,7 +59,9 @@ def patch(series_dir):
         return False
     if OLD_LOOP not in s or OLD_ADD not in s:
         sys.exit(f"{p}：找不到要替换的配乐循环，finish.py 改过了，patch_earshot.py 要跟着改（先确认已打 music src 相对路径补丁）")
-    p.write_text(s.replace(OLD_LOOP, NEW_LOOP, 1).replace(OLD_ADD, NEW_ADD, 1), encoding="utf-8")
+    here = repr(str(Path(__file__).resolve().parent / "earshot_render.py"))   # 写入本工具的实际位置（仓库里直接跑、或装在别处都行）
+    loop = NEW_LOOP.replace('str(Path.home() / ".claude/skills/vibe-knowledge/tools/earshot_render.py")', here)
+    p.write_text(s.replace(OLD_LOOP, loop, 1).replace(OLD_ADD, NEW_ADD, 1), encoding="utf-8")
     print(f"✓ 补丁：{p}（earshot 代码音效）")
     return True
 

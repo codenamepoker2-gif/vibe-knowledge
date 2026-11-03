@@ -87,7 +87,7 @@ def calibrate(bgmt, narr, speech, B, state):
 HOOKS = [
     ("    import hashlib, os\n",
      "    import hashlib, os\n"
-     "    sys.path.insert(0, str(Path.home() / \".claude/skills/vibe-knowledge/tools\")); import bgm_force as VKBGM   # 知识大赏强制 BGM\n"
+     f"    sys.path.insert(0, {str(Path(__file__).resolve().parent)!r}); import bgm_force as VKBGM   # 知识大赏强制 BGM（写入本工具的实际位置，不假定装在 ~/.claude/skills）\n"
      "    _bgm_state = VKBGM.prepare(info, total, B)\n"
      "    bgmt = np.zeros((n, 2))\n"),
     ("            clipa[j0:j1] += a[: j1 - j0] * (g * dk)[:, None]\n",

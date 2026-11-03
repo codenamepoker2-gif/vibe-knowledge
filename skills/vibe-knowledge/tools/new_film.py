@@ -92,8 +92,9 @@ def main():
               "  ⚠ ซีรีส์นี้สร้างด้วยเอนจินรุ่นเก่าที่ยังไม่รองรับภาษาไทย ถ้าจะทำคลิปภาษาไทยให้ใช้ซีรีส์ใหม่ เช่น --series vk-th")
     patch_tools(sd)
     patch_finish(sd)
-    patch_bgm(sd)
+    # earshot 补丁要先打：bgm_force 的钩子挂在 earshot 补丁改出来的那几行上（原来的顺序在全新系列上会直接报错）
     sys.path.insert(0, str(SKILL / "tools")); import patch_earshot; patch_earshot.patch(sd)   # earshot 代码音效
+    patch_bgm(sd)
 
     ref = sd / "voice/host-ref.wav"
     src = Path(a.voice_ref).expanduser()
