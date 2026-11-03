@@ -32,10 +32,16 @@ def main():
     cards, fams = {}, CAT.get("families") or sorted({x.get("fam", x["cat"]) for x in CAT["styles"]})
     for s in CAT["styles"]:
         md = (SK / "styles" / s["key"] / "STYLE.md").read_text(encoding="utf-8")
-        shutil.copy(SK / "styles" / s["key"] / "still.jpg", OUT / "img" / f"{s['key']}.jpg")
+        still = SK / "styles" / s["key"] / "still.jpg"
+        if still.exists():
+            shutil.copy(still, OUT / "img" / f"{s['key']}.jpg")
+            pic = f'<img src="img/{s["key"]}.jpg" alt="{html.escape(s["name"])} 风格图" loading="lazy">'
+        else:   # 新风格还没有风格图（still_todo）：放一个占位块，不让整页生成失败
+            pic = f'<div style="aspect-ratio:16/9;display:grid;place-items:center;background:var(--line);color:var(--dim)">风格图待补 · ยังไม่มีภาพตัวอย่าง</div>'
+
         tpl = "、".join(f"{t} {CAT['templates'][t].split('（')[0]}" for t in s["templates"])
         tier = '<span class="tier">增强档 · 需生图</span>' if s.get("tier") == "增强" else ""
-        cards.setdefault(s.get("fam", s["cat"]), []).append(f"""<article class="card"><img src="img/{s['key']}.jpg" alt="{html.escape(s['name'])} 风格图" loading="lazy">
+        cards.setdefault(s.get("fam", s["cat"]), []).append(f"""<article class="card">{pic}
 <div class="meta"><div class="no">{s['no']:02d} · {html.escape(s.get('fam', s['cat']))} {tier}</div><h3>{html.escape(s['name'])} <span>{html.escape(s['en'])}</span></h3>
 <p class="one">{html.escape(s['one'])}</p><dl><dt>适合</dt><dd>{html.escape(s['fit'])}</dd><dt>搭配母版</dt><dd>{html.escape(tpl)}</dd>
 <dt>标志镜头</dt><dd>{html.escape(field(md, '标志镜头'))}</dd><dt>样片</dt><dd>{html.escape(s.get('sample', ''))}</dd></dl></div></article>""")
