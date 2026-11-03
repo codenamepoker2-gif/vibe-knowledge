@@ -7,6 +7,8 @@ import { el, css, clamp, lerp, inv, eOutCubic, eInOutCubic, eOutQuint, spring, r
 // 画面关键词上限：中文 ≤8 字；泰文 ≤ KW_MAX_TH 个显示字符（字素簇）。取 14 的理由：泰文字形平均约 0.55–0.6 个汉字宽，
 // 8 个汉字的宽度 ≈ 13–15 个泰文显示字符；按实测语速（泰文 8–13 字/秒 vs 中文 5.5–6）折算的阅读时间也落在 12–17。
 export const KW_MAX_TH = 14;
+// 泰语片（core.js 在 timings.voice.lang === "th" 时把 <html lang> 设成 th）：角标、系列卡等默认文字换成泰文
+const thMode = () => document.documentElement.lang === "th";
 
 // ── 视觉系统（对应 references/03-visual-systems.md）──
 export const TH = {
@@ -37,7 +39,8 @@ const decodeLater = (src) => { const im = new Image(); im.src = src; const p = i
 // ── 配图（Renoise 生成的图）：推拉摇移（Ken Burns）+ 淡入淡出 + 暗角 + 可选「AI 示意图」角标 ──
 // p = plate(s, { src: "assets/a01.jpg", x:0, y:0, w:1920, h:1080, ai: true, radius: 0, shade: 0.35 })
 // p.update(t, t0, t1, { from: [1.06, 0, 0], to: [1.14, -40, 10], fi: 0.6, fo: 0.6 })   // [缩放, 位移x, 位移y]
-export function plate(parent, { src, x = 0, y = 0, w = 1920, h = 1080, ai = true, radius = 0, shade = 0.35, pos = "50% 50%", tag = "AI 示意图" }) {
+export function plate(parent, { src, x = 0, y = 0, w = 1920, h = 1080, ai = true, radius = 0, shade = 0.35, pos = "50% 50%", tag = null }) {
+  tag ??= thMode() ? "ภาพ AI" : "AI 示意图";
   decodeLater(src);
   const box = el(parent, "abs", `left:${x}px;top:${y}px;width:${w}px;height:${h}px;overflow:hidden;border-radius:${radius}px;`);
   const img = el(box, "abs",`left:0;top:0;width:${w}px;height:${h}px;background:#000 url(${src}) ${pos}/cover no-repeat;will-change:transform;`);
@@ -80,7 +83,8 @@ export function layers(parent, list, { x = 0, y = 0, w = 1920, h = 1080 } = {}) 
 // ── 动态镜头（Renoise 生成的视频）：tools/clip2frames.py 拆成帧序列，这里按时间逐帧画到画布上 ──
 // 字幕、脚注、关键词都在它上面（finish.py 的 clips 叠加在最上层，会盖住字幕，全屏 B-roll 一律用 vclip）。
 // v = vclip(s, { dir: A("clips/v01"), n: 241, fps: 30 }); v.update(t, t0, t1, { rate: 1, from: [1, 0, 0], to: [1.06, 0, 0], loop: false })
-export function vclip(parent, { dir, n, fps = 30, ext = "jpg", x = 0, y = 0, w = 1920, h = 1080, ai = true, tag = "AI 生成画面", shade = 0.3, keep = 45 }) {
+export function vclip(parent, { dir, n, fps = 30, ext = "jpg", x = 0, y = 0, w = 1920, h = 1080, ai = true, tag = null, shade = 0.3, keep = 45 }) {
+  tag ??= thMode() ? "ภาพ AI" : "AI 生成画面";
   const box = el(parent, "abs", `left:${x}px;top:${y}px;width:${w}px;height:${h}px;overflow:hidden;`);
   const cv = document.createElement("canvas"); cv.width = w; cv.height = h; cv.style.cssText = `position:absolute;left:0;top:0;width:${w}px;height:${h}px;`;
   box.appendChild(cv);
@@ -139,7 +143,7 @@ export function counter(parent, { x = 960, y = 400, size = 150, color = "#f6f2ea
   const pos = align === "center" ? `left:${x - 700}px;width:1400px;text-align:center;` : `left:${x}px;`;
   const up = hasThai(suffix) ? Math.round(size * 0.22) : 0;   // 泰文后缀（ครั้ง、คน）的上标元音 / 声调比数字高，标签再往上让一点
   const lab = label ? el(parent, "abs cn", `${pos}top:${y - 50 - up}px;font-size:32px;color:${labelColor};letter-spacing:4px;`, label) : null;
-  const n = el(parent, "abs", `${pos}top:${y}px;font-family:${font};font-variant-numeric:tabular-nums;font-size:${size}px;line-height:1;font-weight:800;color:${color};white-space:nowrap;`);
+  const n = el(parent, "abs", `${pos}top:${y}px;font-family:${font},NotoThai;font-variant-numeric:tabular-nums;font-size:${size}px;line-height:1;font-weight:800;color:${color};white-space:nowrap;`);
   return { lab, n,
     update(t, keys, o = {}) {           // keys: [[时间, 数值], …]，相邻两点之间缓动
       const { out = null } = o;
@@ -194,7 +198,7 @@ export function choice(parent, options, { y = 690, w = 360, gap = 60, colors = [
 // ── 系列片头：「如果你活在古代 · 第 3 期」──
 export function seriesCard(parent, { series, ep, title, theme }) {
   const c = el(parent, "abs", "left:0;top:0;width:1920px;height:1080px;");
-  const s1 = el(c, "abs cn", `left:0;width:1920px;top:360px;text-align:center;font-size:30px;letter-spacing:14px;color:${theme.dim};`, `${series}${ep ? ` · 第 ${ep} 期` : ""}`);
+  const s1 = el(c, "abs cn", `left:0;width:1920px;top:360px;text-align:center;font-size:30px;letter-spacing:14px;color:${theme.dim};`, `${series}${ep ? (thMode() || hasThai(series) ? ` · ตอนที่ ${ep}` : ` · 第 ${ep} 期`) : ""}`);
   const line = el(c, "abs", `left:860px;top:420px;width:200px;height:2px;background:${theme.accent};transform-origin:50% 50%;`);
   const t1 = el(c, "abs cn", `left:0;width:1920px;top:450px;text-align:center;font-size:112px;font-weight:900;color:${theme.ink};letter-spacing:10px;`, title);
   return { c,
@@ -391,7 +395,8 @@ export function srcChip(parent, text, { x, y, color = "#ffd600" } = {}) {
 }
 
 // 新闻标题条（电视新闻包装 / 固定栏目）：左侧色块栏目名 + 右侧滚动标题
-export function lowerThird(parent, { tag = "VIBE 知识", title = "", y = 860, color = "#d9472b" } = {}) {
+export function lowerThird(parent, { tag = null, title = "", y = 860, color = "#d9472b" } = {}) {
+  tag ??= thMode() ? "VIBE ความรู้" : "VIBE 知识";
   const c = el(parent, "abs", `left:110px;top:${y}px;height:64px;display:flex;align-items:stretch;box-shadow:0 12px 40px rgba(0,0,0,0.45);`);
   el(c, "cn", `background:${color};color:#fff;font-size:28px;font-weight:900;padding:0 22px;display:flex;align-items:center;letter-spacing:3px;`, tag);
   const tt = el(c, "cn", "background:rgba(250,248,242,0.96);color:#111;font-size:30px;font-weight:800;padding:0 26px;display:flex;align-items:center;white-space:nowrap;", title);

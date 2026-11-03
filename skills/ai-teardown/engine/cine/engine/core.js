@@ -61,7 +61,7 @@ async function boot() {
   // 字幕层（在所有镜头之上）
   subWrap = el($("ui"), "abs", "left:0;top:940px;width:1920px;height:90px;display:flex;justify-content:center;align-items:center;z-index:50;pointer-events:none;");
   subNode = el(subWrap, "cn", "max-width:1500px;padding:10px 28px;border-radius:14px;background:rgba(6,6,9,0.55);font-size:40px;line-height:54px;font-weight:600;color:#f6f2ea;text-align:center;letter-spacing:1px;text-shadow:0 2px 12px rgba(0,0,0,0.6);");
-  if (ctx.narr.lang === "th") css(subNode, { lineHeight: "62px" });   // 泰文上下有元音、声调，行高要留够（.th 会把字距归零）
+  if (ctx.narr.lang === "th") { css(subNode, { lineHeight: "62px" }); document.documentElement.lang = "th"; }   // 泰文上下有元音、声调，行高要留够；<html lang=th> 让 know.js 用泰文默认角标
   const list = await film.build(ctx);
   shots = list.map((s) => ({ ...s, ui: s.build($("ui")) }));
   // 字幕层要在最上面

@@ -12,7 +12,7 @@ description: 「Vibe知识大赏」精品知识短片工作室：一个知识点
 
 **两档制作**（references/08-tiers.md）：
 - **基础档 · 0 积分**：Opus 手写 SVG 分层插画 + 粒子 / 3D + 数据组件，小米 MiMo 配音（限免），**默认 BGM**（见下），**earshot 代码音效**（references/10-earshot.md，两档通用）。
-- **增强档 · 按镜头挑**：只把代码做不好的镜头（写实场景、最需要被记住的 1–3 个时刻、真实运动）交给 Renoise，其余照样代码。轻 ≈25–40 / 标准 ≈250–300 / 旗舰 ≈600–700 积分，每次先报价再生成。
+- **增强档 · 按镜头挑**：只把代码做不好的镜头（写实场景、最需要被记住的 1–3 个时刻、真实运动）交给 Renoise 或自带生成器（任何出图 / 出视频工具，见 04-renoise.md「自带生成器」），其余照样代码。轻 ≈25–40 / 标准 ≈250–300 / 旗舰 ≈600–700 积分，每次先报价再生成。
 - 同一份 film.js 两档通用（`ENH` 开关：plate/vclip ↔ layers）。
 
 ## BGM（强制，2026-10-28 起，两档通用）
@@ -74,8 +74,8 @@ S=${VK_WORKSPACE:-~/vibe-knowledge}/examples/vk; L=$S/lessons/<期号>
 | ② 查 | 事实清单（T1/T2/T3 分级、原文摘录、用在哪拍） | `facts.md` |
 | ③ 写 | 按母版骨架写旁白（字数上限见骨架 `_guide`）→ 子 agent 对抗审查（钩子、出处、字数）→ 改 | `narration.json` |
 | ④ 分镜 / 资产单 | 每拍画面分镜（标明哪些镜头代码做、哪些增强）；增强档写 assets.json + estimate_cost 报价；基础档选曲 | `assets.json` |
-| **确认 2** | 用户看旁白稿 + 分镜（+ 增强镜头清单和报价），明确同意后才生成 | |
-| ⑤ 生成 | 增强档：Renoise 先图 + 音效 → 用户挑图 → 视频（首帧用选中的图）→ 下载、改名、clip2frames。基础档跳过 | `assets/` |
+| **确认 2** | 用户看旁白稿 + 分镜（+ 增强镜头清单和报价；自带生成器写明用哪个工具、是否收费），明确同意后才生成 | |
+| ⑤ 生成 | 增强档：Renoise 先图 + 音效 → 用户挑图 → 视频（首帧用选中的图）→ 下载、改名、clip2frames；或自带生成器：按 assets.json 的 engine 用任意工具生成，放进 assets/img 或 assets/clips 再 clip2frames（04-renoise.md「自带生成器」）。基础档跳过 | `assets/` |
 | ⑥ 配音 + 配乐 | 先出 15–20 秒开场试听让用户定音色和语速 → `tts_mimo.py --gap 0.2` → `speed.py` → `check_timings.py` → `voice_post.py` → `fit_bgm.py` 按片长裁默认 BGM | `build/timings.json`、`assets/audio/bgm.wav` |
 | ⑦ 编 | film.js（know.js 组件）→ stills.py 接触表逐张看（含动画中途帧） | `stills/` |
 | ⑧ 渲 | queue.sh（record → finish → deliver） | 成片 |

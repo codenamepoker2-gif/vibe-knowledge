@@ -77,7 +77,7 @@ export function promptChip(parent, text, { y = 968, label = "提示词", x = nul
 export function quoteCard(parent, { x, y, w, who, text, zh, src }) {
   const c = el(parent, "abs", `left:${x}px;top:${y}px;width:${w}px;border-radius:20px;background:rgba(18,17,24,0.9);border:1px solid rgba(255,255,255,0.1);padding:26px 30px;box-shadow:0 30px 80px rgba(0,0,0,0.5);`);
   el(c, "mono", `font-size:20px;color:${C.orange};margin-bottom:12px;`, who);
-  el(c, "", "font-family:Geist;font-size:30px;line-height:42px;font-weight:600;color:#f2ece2;", `“${text}”`);
+  el(c, "", "font-family:Geist,NotoThai;font-size:30px;line-height:42px;font-weight:600;color:#f2ece2;", `“${text}”`);
   if (zh) el(c, "cn", "margin-top:12px;font-size:24px;line-height:36px;color:#bdb6aa;", zh);
   if (src) el(c, "mono", "margin-top:14px;font-size:16px;color:#6f6c76;", src);
   return c;
