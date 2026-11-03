@@ -59,5 +59,5 @@
   - `gemini`：用户自己的 `GEMINI_API_KEY`，模型 `gemini-3.8-flash-tts`（`GEMINI_TTS_MODEL` 可改），音色默认 Kore，`voice.style` 作为 speech_metadata 的 style。免费层不收费但按项目限流，且 Google 定价页注明免费层数据会用于改进其产品。本仓库作者机器上没有密钥，未实测。
   - `mimo`：沿用 tts_mimo.py 的密钥和接口，泰语效果未验证。
 - 计时：edge 用它自己的逐词时间（WordBoundary），经 lexicon 替换后按 difflib 对回原文；其余按泰文「显示字符」比例分配（空格算 1.5 个字符）。拿 edge 两个音色、6 段文字的真实逐词时间对照，比例法的词首误差均值约 0.23 秒、中位数约 0.18 秒、九成在 0.56 秒内、最大约 1.1 秒；试过用静音段做锚点，没有明显改善，所以没加。cue 要卡得很准的拍，用 edge 配音，或在 film.js 里用 `"B03.cue+0.2"` 微调。
-- 回读：`--qa` 用 faster-whisper（泰语）经 uvx 运行，只在模型（`VK_WHISPER_MODEL`，默认 small）已在 Hugging Face 缓存里时才跑；第一次要下载就加 `--qa-download`（small 约 0.5 GB）。没有 uvx 或没有模型时会打印一行跳过说明，不报错。
+- 回读：`--qa` 用 faster-whisper（泰语）经 uvx 运行，只在模型（`VK_WHISPER_MODEL`，默认 small）已在 Hugging Face 缓存里时才跑；第一次要下载就加 `--qa-download`（small 约 0.5 GB）。没有 uvx 或没有模型时会打印一行跳过说明，不报错。Whisper 按发音写泰文（กระดาษ → กระดาท、ศูนย์ → สูน），逐字比对没有意义，所以回读分数比的是「读音」：去掉声调和上下元音、去掉 ์ 不发音的字母、同音辅音归一。实测 18 段正确朗读的回读分数 82%–99%（say 82–97%，edge 男声 82–96%，女声 82–99%），低于 80% 才标 ⚠；数字写成阿拉伯数字的句子分数会偏低，听一下就行。
 - 语速实测与时长预算见 vibe-knowledge 的 references/13-duration.md 第七节（say 约 8.2、edge 男声约 11.6、女声约 13.1 显示字符/秒）。

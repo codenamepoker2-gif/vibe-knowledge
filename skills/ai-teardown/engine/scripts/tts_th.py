@@ -23,7 +23,7 @@ Timing: edge → word boundaries mapped back onto the original text; everything 
 display chars (grapheme clusters, engine/scripts/thtext.py), spaces weighted --space-weight display chars.
 [[cue]] markers get the time of the first display char after them. Tone marks / floating vowels share their
 consonant's time. timings.json gets voice.lang = "th" (cine shows Thai subtitles from it).
---qa: read back each beat with faster-whisper (Thai) via uvx if the model ($VK_WHISPER_MODEL, default "small")
+--qa: read back each beat with faster-whisper (Thai) via uvx (score = sound-alike similarity, < 80% is flagged) if the model ($VK_WHISPER_MODEL, default "small")
 is already in the Hugging Face cache; add --qa-download to allow the first download (~0.5 GB for small).
 Skips cleanly when uvx or the model is missing.
 """
@@ -236,13 +236,16 @@ def timing(clean, say, dur, marks, head, space_weight):
 
 # ── optional readback (faster-whisper, Thai) ──
 WHISPER_HELPER = r"""
-import json, sys
+import json, subprocess, sys
+import numpy as np
 from faster_whisper import WhisperModel
 a = json.loads(sys.stdin.read())
 m = WhisperModel(a["model"], device="cpu", compute_type="int8")
 out = {}
 for f in a["files"]:
-    segs, _ = m.transcribe(f, language="th", beam_size=5, initial_prompt=a.get("prompt") or None)
+    # decode with ffmpeg instead of PyAV: some PyAV releases break faster-whisper's decode_audio (metadata_errors)
+    pcm = subprocess.run(["ffmpeg", "-v", "error", "-i", f, "-ac", "1", "-ar", "16000", "-f", "f32le", "-"], capture_output=True, check=True).stdout
+    segs, _ = m.transcribe(np.frombuffer(pcm, np.float32), language="th", beam_size=5, initial_prompt=a.get("prompt") or None)
     out[f] = "".join(s.text for s in segs)
 print(json.dumps(out, ensure_ascii=False))
 """
@@ -266,9 +269,21 @@ def readback(files, allow_download=False):
     return json.loads(r.stdout.strip().splitlines()[-1]), f"readback: faster-whisper {model}"
 
 
+# Whisper writes Thai by ear (กระดาษ → กระดาท, ศูนย์ → สูน), so compare sounds, not spellings: drop tone marks and
+# above/below vowels, drop a letter silenced by ์, fold consonants that sound alike. On 18 test paragraphs this put
+# correctly spoken TTS at 0.82–0.99 (spelling-level similarity was 0.37–0.82, i.e. useless as a check).
+_SOUND = {c: k for k, v in {"ค": "ขฃคฅฆ", "ช": "ฉชฌ", "ส": "ซศษส", "ด": "ดฎ", "ต": "ตฏ", "ท": "ถฐทธฒฑ", "น": "นณ",
+                            "ล": "รลฬ", "พ": "ผพภ", "ฟ": "ฝฟ", "ห": "หฮ", "ย": "ญย"}.items() for c in v}
+
+
+def _sound(s):
+    import unicodedata
+    s = re.sub(r".\u0E4C", "", PUNCT_RE.sub("", s))
+    return "".join(_SOUND.get(c, c) for c in s if unicodedata.category(c) != "Mn" and c not in "ฯๆ")
+
+
 def similarity(a, b):
-    f = lambda s: [s[x:y] for x, y in thtext.clusters(PUNCT_RE.sub("", s))]
-    return difflib.SequenceMatcher(None, f(a), f(b), autojunk=False).ratio()
+    return difflib.SequenceMatcher(None, _sound(a), _sound(b), autojunk=False).ratio()
 
 
 def main():
@@ -359,7 +374,7 @@ def main():
         h = heard.get(str(j["wav"]))
         if h is not None:
             ratio = similarity(clean, h)
-            line += f"  readback {ratio:.0%}" + ("  ⚠ check this beat" if ratio < 0.85 else "")
+            line += f"  readback {ratio:.0%}" + ("  ⚠ listen to this beat" if ratio < 0.80 else "")
             report.append({"beat": b["id"], "heard": h, "ratio": round(ratio, 3)})
         print(line)
         parts.append((j["mp3"], t))
