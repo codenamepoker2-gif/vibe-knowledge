@@ -7,16 +7,21 @@
 @font-face { font-family: "NotoSC"; src: url(fonts/NotoSansSC-VF.ttf); font-weight: 100 900; }
 @font-face { font-family: "Geist"; src: url(fonts/Geist-VF.ttf); font-weight: 100 900; }
 @font-face { font-family: "GeistMono"; src: url(fonts/GeistMono-VF.ttf); font-weight: 100 900; }
+@font-face { font-family: "NotoThai"; src: url(fonts/NotoSansThai-VF.ttf); font-weight: 100 900; }
 html, body { margin: 0; background: #050507; overflow: hidden; }
 #frame { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; background: #060609; transform-origin: 0 0; }
 #cam { position: absolute; inset: 0; transform-origin: 50% 50%; }
 #gl { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
-#ui { position: absolute; inset: 0; font-family: "Geist", "NotoSC", sans-serif; color: #F4F0E8; -webkit-font-smoothing: antialiased; }
+#ui { position: absolute; inset: 0; font-family: "Geist", "NotoSC", "NotoThai", "Sarabun", sans-serif; color: #F4F0E8; -webkit-font-smoothing: antialiased; }
 #ui * { box-sizing: border-box; }
 .shot { position: absolute; inset: 0; display: none; }
 .abs { position: absolute; }
-.mono { font-family: "GeistMono", "NotoSC", monospace; }
-.cn { font-family: "NotoSC", "Geist", sans-serif; }
+.mono { font-family: "GeistMono", "NotoSC", "NotoThai", monospace; }
+.cn { font-family: "NotoSC", "NotoThai", "Geist", sans-serif; }
+/* 泰文：字距一律归零（字距会把上下元音、声调符号和辅音拆开），字体用 Noto Sans Thai。util.js 的 el() 遇到泰文自动加 .th */
+/* Thai: letter-spacing breaks glyph stacking, so it is forced to 0; Thai glyphs come from Noto Sans Thai (Latin from the bundled NotoSC; Sarabun only if the Thai face fails to load). */
+.th, .th * { letter-spacing: 0 !important; font-family: "NotoThai", "NotoSC", "Sarabun", "Geist", sans-serif; }
+.th.mono, .th .mono { font-family: "GeistMono", "NotoThai", "Sarabun", monospace; }
 </style>
 <script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js" } }</script>
 </head>

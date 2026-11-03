@@ -25,7 +25,7 @@ def new_cine(sd, title):
     """代码成片引擎拷进系列目录（tools 按 <系列>/cine、<系列>/lessons 的相对位置找文件），字体从 engine/assets/fonts 拿。"""
     shutil.copytree(ENGINE / "cine", sd / "cine", ignore=shutil.ignore_patterns("__pycache__", ".DS_Store"))
     (sd / "cine/fonts").mkdir(exist_ok=True)
-    for f in ["Geist-VF.ttf", "GeistMono-VF.ttf", "NotoSansSC-VF.ttf"]:
+    for f in ["Geist-VF.ttf", "GeistMono-VF.ttf", "NotoSansSC-VF.ttf", "NotoSansThai-VF.ttf"]:   # NotoSansThai：泰文（OFL，见 assets/fonts/NotoSansThai-OFL.txt）
         shutil.copy(ENGINE / "assets/fonts" / f, sd / "cine/fonts" / f)
     (sd / "cine/queue.txt").touch()
     (sd / "cine/deliver.env").write_text(f'# deliver.sh 的去向（zsh 语法）\nD="$HOME/Desktop/{title}_视频"\nWEB=publish/course\nSTRIP=""\n', encoding="utf-8")

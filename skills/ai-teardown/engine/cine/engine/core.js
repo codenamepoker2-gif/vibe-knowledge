@@ -2,7 +2,7 @@
 // 片头冷开场直接用样片片段（成片时拼接），这里从 film.COLD 秒开始渲染。
 import * as THREE from "three";
 import { Post } from "./post.js";
-import { clamp, el, css } from "./util.js";
+import { clamp, el, css, thai } from "./util.js";
 import { Narr } from "./narr.js";
 
 const W = 1920, H = 1080;
@@ -37,7 +37,7 @@ function seek(t) {
   // 字幕
   const s = ctx.narr.sub(t);
   const hide = sh.noSub || !s;
-  if (!hide && subNode.textContent !== s.text) subNode.textContent = s.text;
+  if (!hide && subNode.__t !== s.text) { subNode.__t = s.text; subNode.textContent = s.text; thai(subNode, s.text); }
   css(subWrap, { opacity: hide ? "0" : "1" });
   $("cam").style.transform = hitcam(t);
   ctx.post.finish(t);
@@ -50,6 +50,7 @@ async function boot() {
   await Promise.all([
     document.fonts.load("900 100px NotoSC", "视频帧函数时间"), document.fonts.load("500 40px NotoSC", "字幕"), document.fonts.load("700 40px NotoSC", "字幕"),
     document.fonts.load("800 100px Geist", "Opus 5.5"), document.fonts.load("600 40px Geist", "CLAUDE"), document.fonts.load("500 30px GeistMono", "const"),
+    document.fonts.load("900 100px NotoThai", "ที่นี่ปั้นกุ้งผู้"), document.fonts.load("600 40px NotoThai", "คำบรรยาย"), document.fonts.load("400 20px NotoThai", "ที่มา"),
   ]);
   await document.fonts.ready;
   const r = new THREE.WebGLRenderer({ canvas: $("gl"), antialias: false, preserveDrawingBuffer: true, powerPreference: "high-performance" });
@@ -60,6 +61,7 @@ async function boot() {
   // 字幕层（在所有镜头之上）
   subWrap = el($("ui"), "abs", "left:0;top:940px;width:1920px;height:90px;display:flex;justify-content:center;align-items:center;z-index:50;pointer-events:none;");
   subNode = el(subWrap, "cn", "max-width:1500px;padding:10px 28px;border-radius:14px;background:rgba(6,6,9,0.55);font-size:40px;line-height:54px;font-weight:600;color:#f6f2ea;text-align:center;letter-spacing:1px;text-shadow:0 2px 12px rgba(0,0,0,0.6);");
+  if (ctx.narr.lang === "th") css(subNode, { lineHeight: "62px" });   // 泰文上下有元音、声调，行高要留够（.th 会把字距归零）
   const list = await film.build(ctx);
   shots = list.map((s) => ({ ...s, ui: s.build($("ui")) }));
   // 字幕层要在最上面

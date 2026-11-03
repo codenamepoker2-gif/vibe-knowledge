@@ -1,5 +1,36 @@
 // 旁白时间轴：读配音生成的 timings.json（逐字时间、[[cue]] 时间），提供「某句话说到某个字是第几秒」和字幕。
 // 片头冷开场（样片片段）占 off 秒，旁白整体往后挪 off。
+import { hasThai, thLen } from "./util.js";
+
+// 泰语字幕（timings.voice.lang === "th"，或这一拍里有泰文）：泰文用空格分短语、没有逗号句号，
+// 所以按空格 / 标点切短语，再按「显示字符」装行（≤ TH_SUB_MAX），太长的短语按 Intl.Segmenter 词边界切开。
+// Thai subtitles: phrases are separated by spaces, so split there, pack phrases up to TH_SUB_MAX display chars
+// (≈ 2.5–4 s of reading at the measured 8–13 chars/s, like 16 Chinese chars at 5.5/s), and split longer phrases at word boundaries.
+export const TH_SUB_MAX = 30;
+function thaiSubs(txt) {
+  const phr = [];
+  for (const m of txt.matchAll(/[^\s，。；：！？、,;:!?]+(?:\s+ๆ)*/g)) phr.push([m.index, m.index + m[0].length]);
+  const pieces = [];
+  const wseg = new Intl.Segmenter("th", { granularity: "word" });
+  for (const [a, z] of phr) {
+    if (thLen(txt.slice(a, z)) <= TH_SUB_MAX) { pieces.push([a, z]); continue; }
+    let s0 = a, last = a;
+    for (const w of wseg.segment(txt.slice(a, z))) {
+      const e = a + w.index + w.segment.length;
+      if (thLen(txt.slice(s0, e)) > TH_SUB_MAX && last > s0) { pieces.push([s0, last]); s0 = last; }
+      last = e;
+    }
+    if (z > s0) pieces.push([s0, z]);
+  }
+  const out = [];
+  for (const pc of pieces) {
+    const L = out[out.length - 1];
+    if (L && thLen(txt.slice(L[0], pc[1])) <= TH_SUB_MAX) L[1] = pc[1];
+    else out.push([...pc]);
+  }
+  return out;
+}
+
 export class Narr {
   constructor(tl, off = 0) {
     this.tl = tl;
@@ -7,6 +38,7 @@ export class Narr {
     this.beats = tl.beats;
     this.ids = Object.keys(tl.beats);
     this.total = tl.total + off;
+    this.lang = tl.voice?.lang || (Object.values(tl.beats).some((b) => hasThai(b.text)) ? "th" : "zh");
     this.subs = this.buildSubs();
   }
 
@@ -36,6 +68,14 @@ export class Narr {
     for (const id of this.ids) {
       const b = this.beats[id];
       const txt = b.text;
+      if (hasThai(txt)) {   // 泰文：按短语装行，保留词间空格
+        const th = thaiSubs(txt);
+        th.forEach(([a, z], k) => {
+          const next = k + 1 < th.length ? b.chars[th[k + 1][0]] + this.off : b.end + this.off + 0.15;
+          out.push({ text: txt.slice(a, z).trim(), start: b.chars[a] + this.off - 0.05, end: next - 0.04 });
+        });
+        continue;
+      }
       let segs = [], s0 = 0;
       for (let i = 0; i <= txt.length; i++) {
         const num = txt[i] === "." && /\d/.test(txt[i - 1] || "") && /\d/.test(txt[i + 1] || "");   // 5.5 这种小数点不断句

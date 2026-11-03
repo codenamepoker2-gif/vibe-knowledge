@@ -8,6 +8,7 @@
 | AntV X6 | skills/ai-teardown/engine/assets/vendor/x6.min.js | MIT |
 | Geist / Geist Mono | skills/ai-teardown/engine/assets/fonts/ | SIL OFL 1.1 |
 | Noto Sans SC | skills/ai-teardown/engine/assets/fonts/ | SIL OFL 1.1 |
+| Noto Sans Thai（泰文 / ภาษาไทย，variable，取自 google/fonts `ofl/notosansthai`） | skills/ai-teardown/engine/assets/fonts/NotoSansThai-VF.ttf（许可全文 NotoSansThai-OFL.txt） | SIL OFL 1.1 |
 | 霞鹜文楷 LXGW WenKai | skills/ai-teardown/engine/assets/fonts/ | SIL OFL 1.1 |
 | Tabler Icons | skills/ai-teardown/engine/assets/iconsets/tabler.json | MIT |
 | Lucide | skills/ai-teardown/engine/assets/iconsets/lucide.json | ISC |

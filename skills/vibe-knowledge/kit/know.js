@@ -2,7 +2,11 @@
 // 光轨、地图扩散、柱状对比、章节签。全部是「时间 t 的纯函数」：build 时建 DOM，render 里按 t 摆状态，不依赖上一帧。
 // 装法：tools/new_film.py 会把本文件拷到 <系列>/cine/engine/know.js；film.js 里
 //   import { TH, bg, layers, plate, vclip, keyword, counter, foot, foots, choice, seriesCard, vquote, trail, spread, bars, chapter, ask } from "../../cine/engine/know.js";
-import { el, css, clamp, lerp, inv, eOutCubic, eInOutCubic, eOutQuint, spring, rng } from "./util.js";
+import { el, css, clamp, lerp, inv, eOutCubic, eInOutCubic, eOutQuint, spring, rng, hasThai, thLen } from "./util.js";
+// 泰文（ภาษาไทย）：util.js 的 el() 遇到泰文会自动加 .th（字距归零、Noto Sans Thai）并按词边界换行，组件不用另写。
+// 画面关键词上限：中文 ≤8 字；泰文 ≤ KW_MAX_TH 个显示字符（字素簇）。取 14 的理由：泰文字形平均约 0.55–0.6 个汉字宽，
+// 8 个汉字的宽度 ≈ 13–15 个泰文显示字符；按实测语速（泰文 8–13 字/秒 vs 中文 5.5–6）折算的阅读时间也落在 12–17。
+export const KW_MAX_TH = 14;
 
 // ── 视觉系统（对应 references/03-visual-systems.md）──
 export const TH = {
@@ -115,7 +119,7 @@ export function vclip(parent, { dir, n, fps = 30, ext = "jpg", x = 0, y = 0, w =
 // ── 关键词：画面上的字只放关键词（≤8 字），旁白已经有字幕 ──
 export function keyword(parent, text, { x = 960, y = 420, size = 120, color = "#f6f2ea", weight = 900, align = "center", sub = "", subColor = "#bdb6aa", glow = "" } = {}) {
   const plain = text.replace(/<[^>]+>/g, "");
-  if (plain.length > 8) console.warn(`关键词超过 8 字：${plain}`);
+  if (hasThai(plain) ? thLen(plain) > KW_MAX_TH : plain.length > 8) console.warn(hasThai(plain) ? `คีย์เวิร์ดยาวเกิน ${KW_MAX_TH} ตัวอักษร: ${plain}` : `关键词超过 8 字：${plain}`);
   const left = align === "center" ? `left:${x - 900}px;width:1800px;text-align:center;` : `left:${x}px;`;
   const k = el(parent, "abs cn", `${left}top:${y}px;font-size:${size}px;line-height:1.15;font-weight:${weight};color:${color};white-space:nowrap;letter-spacing:${size > 90 ? 6 : 2}px;${glow ? `text-shadow:0 0 40px ${glow};` : ""}`, text);
   const s = sub ? el(parent, "abs cn", `${left}top:${y + size * 1.25}px;font-size:${Math.round(size * 0.28)}px;color:${subColor};white-space:nowrap;letter-spacing:3px;`, sub) : null;
@@ -133,7 +137,8 @@ export function keyword(parent, text, { x = 960, y = 420, size = 120, color = "#
 // c = counter(s, { x, y, size, color, label: "放回家的死囚", suffix: "人" }); c.update(t, [[T0, 0], [T1, 83], [T2, 328], [T3, 390]])
 export function counter(parent, { x = 960, y = 400, size = 150, color = "#f6f2ea", label = "", suffix = "", labelColor = "#bdb6aa", align = "center", decimals = 0, font = "Geist" } = {}) {
   const pos = align === "center" ? `left:${x - 700}px;width:1400px;text-align:center;` : `left:${x}px;`;
-  const lab = label ? el(parent, "abs cn", `${pos}top:${y - 50}px;font-size:32px;color:${labelColor};letter-spacing:4px;`, label) : null;
+  const up = hasThai(suffix) ? Math.round(size * 0.22) : 0;   // 泰文后缀（ครั้ง、คน）的上标元音 / 声调比数字高，标签再往上让一点
+  const lab = label ? el(parent, "abs cn", `${pos}top:${y - 50 - up}px;font-size:32px;color:${labelColor};letter-spacing:4px;`, label) : null;
   const n = el(parent, "abs", `${pos}top:${y}px;font-family:${font};font-variant-numeric:tabular-nums;font-size:${size}px;line-height:1;font-weight:800;color:${color};white-space:nowrap;`);
   return { lab, n,
     update(t, keys, o = {}) {           // keys: [[时间, 数值], …]，相邻两点之间缓动
@@ -155,7 +160,11 @@ export function foot(parent, { color = "rgba(230,224,212,0.7)", y = 1043 } = {})
   return { n,
     show(t, at, out, text) {
       if (t < at || t >= out) return false;
-      if (n.textContent !== text) n.textContent = text;
+      if (n.textContent !== text) {
+        n.textContent = text;
+        const th = hasThai(text);   // 泰文：上下元音会被 overflow:hidden 切掉，行高放到 32px、整体上移 4px
+        n.classList.toggle("th", th); css(n, { lineHeight: th ? "32px" : "26px", top: `${th ? y - 4 : y}px` });
+      }
       const a = clamp((t - at) / 0.3) * (1 - clamp((t - (out - 0.25)) / 0.25));
       css(n, { opacity: a.toFixed(3), visibility: "visible" });
       return true;

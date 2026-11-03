@@ -84,6 +84,12 @@ def main():
         # 成片交付目录跟着工作区走（new_series.py 默认写的是桌面）
         (sd / "cine/deliver.env").write_text(f'# deliver.sh 的去向（zsh 语法）\nD="{ws}/deliver"\nWEB=publish/course\nSTRIP=""\n', encoding="utf-8")
     shutil.copy(SKILL / "kit/know.js", sd / "cine/engine/know.js")
+    thai_font = sd / "cine/fonts/NotoSansThai-VF.ttf"   # 泰文字体（老系列补上）
+    if not thai_font.exists() and (AT / "engine/assets/fonts/NotoSansThai-VF.ttf").exists():
+        shutil.copy(AT / "engine/assets/fonts/NotoSansThai-VF.ttf", thai_font)
+    if "thLen" not in (sd / "cine/engine/util.js").read_text(encoding="utf-8"):
+        print("⚠ 这个系列的 cine 引擎是旧版，没有泰文支持（字距、换行、字幕）；做泰语片请换一个新系列：--series vk-th\n"
+              "  ⚠ ซีรีส์นี้สร้างด้วยเอนจินรุ่นเก่าที่ยังไม่รองรับภาษาไทย ถ้าจะทำคลิปภาษาไทยให้ใช้ซีรีส์ใหม่ เช่น --series vk-th")
     patch_tools(sd)
     patch_finish(sd)
     patch_bgm(sd)

@@ -53,12 +53,40 @@ export function rng(seed) {
   };
 }
 
+// ── 泰语（ภาษาไทย）──
+// 泰文的「显示字符」= 字素簇（Intl.Segmenter grapheme，上下元音、声调符号、ำ 跟着辅音算一个），不算空格和标点；
+// 与 engine/scripts/thtext.py 的 display_len 同一个口径。Thai display chars = grapheme clusters minus spaces/punctuation.
+const TH_RE = /[\u0E00-\u0E7F]/;
+export const hasThai = (s) => TH_RE.test(String(s ?? ""));
+const _seg = {};
+const seg = (g) => (_seg[g] ||= new Intl.Segmenter("th", { granularity: g }));
+export function thLen(s) {
+  let n = 0;
+  for (const { segment: c } of seg("grapheme").segment(String(s ?? ""))) if (!/^[\s\p{P}\u200B]/u.test(c)) n++;
+  return n;
+}
+// 按泰语词边界切开：每个词一个不换行的 span，词之间放 <wbr>，所以只会在词边界换行（不会把一个词、一个字素簇拆到两行）
+// Thai has no spaces between words: wrap each Intl.Segmenter word in a nowrap span with <wbr> between, so lines break only at word boundaries.
+const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+export function thWrap(text) {
+  const out = [];
+  for (const { segment: w } of seg("word").segment(String(text))) out.push(/^\s+$/.test(w) ? w : `<span style="white-space:nowrap">${esc(w)}</span><wbr>`);
+  return out.join("");
+}
+// 文字里有泰文：加 th 类（index.html 里 .th 把字距归零、用 Noto Sans Thai），纯文本再按词边界包起来
+export function thai(node, html) {
+  if (!hasThai(html)) return node;
+  node.classList.add("th");
+  if (!/[<&]/.test(html)) node.innerHTML = thWrap(html);
+  return node;
+}
+
 // 小 DOM 工具
 export function el(parent, cls = "", style = "", html = "") {
   const d = document.createElement("div");
   if (cls) d.className = cls;
   if (style) d.style.cssText = style;
-  if (html) d.innerHTML = html;
+  if (html) { d.innerHTML = html; thai(d, String(html)); }
   parent.appendChild(d);
   return d;
 }
